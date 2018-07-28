@@ -81,15 +81,35 @@ function getOmdb(movieTitle) {
     let url = "http://www.omdbapi.com/?apikey=" + apiKey + "&t=" + movieTitle.replace(/\s+/g, "+");
     console.log(url);
 
-    request(url, function (error, response, body) {
+    function getRatings(ratings) {
+        let imdbRating, rottenRating;
+        for (let i = 0;
+            (i < ratings.length) && 
+                (isUndefined(imdbRating) || isUndefined(rottenRating));
+            ++i) {
+            let elem = ratings[i];
+            if (elem.Source.indexOf("Internet Movie Database") != -1) {
+                imdbRating = elem.Value;
+            }
+            else if (elem.Source.indexOf("Rotten") != -1) {
+                rottenRating = elem.Value;
+            }
+        }
+        return {imdb: imdbRating, rotten: rottenRating};
+    }
+
+    request(url, function (error, response, bodyStr) {
         // console.log('error:', error); // Print the error if one occurred
         // console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
         // console.log(response);
-        console.log(body); // Print the HTML for the Google homepage.
+        console.log(bodyStr); // Print the HTML for the Google homepage.
+        // console.log("Body type: ", typeof body);
+        const body = JSON.parse(bodyStr);
         console.log("Title: ", body["Title"]);
         console.log("Year: ", body.Year);
-        console.log("IMDB Rating: ", body.imdbRating);
-        // console.log("Rotten Tomatoes Rating: ", body.imdbRating);
+        const ratings = getRatings(body.Ratings);
+        console.log("IMDB Rating: ", ratings.imdb);
+        console.log("Rotten Tomatoes Rating: ", ratings.rotten);
         console.log("Country: ", body.Country);
         console.log("Language: ", body.Language);
         console.log("Plot: ", body.Plot);
@@ -139,8 +159,6 @@ function getUserInput() {
         console.log("Enter a valid command");
         return;
     }
-
-  
     
     const command = args[2];
     const commandVal = args[3];
@@ -158,6 +176,8 @@ function getUserInput() {
 
 getUserInput();
 
+// VIK_TODO: Try to figure out how to work async with
+// inquirer
 // function getUserInput() {
 //     inquirer.prompt([
 //         {
