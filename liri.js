@@ -11,6 +11,12 @@ var fs = require("fs");
 var clientSpotify = new Spotify(keys.spotify);
 var clientTwitter = new Twitter(keys.twitter);
 
+const COMMAND_LOOKUP = {
+    "my-tweets": getTwitter,
+    "spotify-this-song": getSpotify,
+    "movie-this": getOmdb
+}
+
 function isUndefined(param) {
     return (typeof param === "undefined");
 };
@@ -91,9 +97,39 @@ function getOmdb(movieTitle) {
     });
 }
 
-function getRandomSong() {
-    fs.readFile("random.txt", function(err, data) {
+function getRandomCommand() {
+    fs.readFile("random.txt", "utf8", function(err, data) {
         if (err) throw err;
+        // console.log(typeof data);
+        const lines = data.split("\n");
+        console.log(lines);
+
+        let command;
+        let commandVal;
+        let i = 0;
+        // Find the first line which is not commented out
+        // and extract the command and argument from that line
+        while (i < lines.length) {
+            let pos = lines[i].indexOf(",");
+            let isArgGiven = (pos !== -1);
+            command = lines[i].substring(0, (isArgGiven ? pos : lines[i].length) );
+            // If argument given assign it to commandVal
+            if (isArgGiven) {
+                commandVal = lines[i].substring(pos + 1);
+            }
+            // lines starting with # is taken as commented out line
+            if (command.indexOf("#") != 0) {
+                break;
+            }
+            ++i;
+         }
+
+        if ( !isUndefined(COMMAND_LOOKUP[command]) ) {
+            COMMAND_LOOKUP[command](commandVal);
+        }
+        else {
+            console.log("The command \"" + command + "\" in file is not valid");
+        }
     })
 }
 
@@ -104,20 +140,16 @@ function getUserInput() {
         return;
     }
 
-    const commandLookup = {
-        "my-tweets": getTwitter,
-        "spotify-this-song": getSpotify,
-        "movie-this": getOmdb
-    }
+  
     
     const command = args[2];
     const commandVal = args[3];
 
-    if (typeof commandLookup[command] !== "undefined") {
-        commandLookup[command](commandVal);
+    if (typeof COMMAND_LOOKUP[command] !== "undefined") {
+        COMMAND_LOOKUP[command](commandVal);
     }
     else if (command === "do-what-it-says") {
-        // getSpotify(getRandomSong());
+        getRandomCommand();
     }
     else {
         console.log("\"" + command  + "\" is not a valid command" );
