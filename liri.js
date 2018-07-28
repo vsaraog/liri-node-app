@@ -88,10 +88,10 @@ function getOmdb(movieTitle) {
                 (isUndefined(imdbRating) || isUndefined(rottenRating));
             ++i) {
             let elem = ratings[i];
-            if (elem.Source.indexOf("Internet Movie Database") != -1) {
+            if (elem.Source.toLowerCase().indexOf("internet movie database") != -1) {
                 imdbRating = elem.Value;
             }
-            else if (elem.Source.indexOf("Rotten") != -1) {
+            else if (elem.Source.toLowerCase().indexOf("rotten") != -1) {
                 rottenRating = elem.Value;
             }
         }
