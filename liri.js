@@ -25,8 +25,9 @@ function getTwitter() {
     var params = { screen_name: 'JohnSmi23366922', count: 20 };
     clientTwitter.get('statuses/user_timeline', params, function (error, tweets, response) {
         if (!error) {
+    		let i = 0;
             tweets.forEach(elem => {
-                console.log(elem.text);
+                console.log("Tweet #" + ++i + ": ", elem.text);
             });
             //   console.log(tweets);
         } else {
@@ -52,7 +53,7 @@ function getSpotify(songTitle) {
             // console.log(elem);
             // console.log(JSON.stringify(elem, null, 2));
         })
-        console.log("***DEBUG***: songs count:", items.length);
+//        console.log("***DEBUG***: songs count:", items.length);
         let song = items[0];
         let artists = song.artists;
         let songArtists;
@@ -79,7 +80,7 @@ function getOmdb(movieTitle) {
     }
 
     let url = "http://www.omdbapi.com/?apikey=" + apiKey + "&t=" + movieTitle.replace(/\s+/g, "+");
-    console.log(url);
+//    console.log(url);
 
     function getRatings(ratings) {
         let imdbRating, rottenRating;
@@ -102,7 +103,7 @@ function getOmdb(movieTitle) {
         // console.log('error:', error); // Print the error if one occurred
         // console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
         // console.log(response);
-        console.log(bodyStr); // Print the HTML for the Google homepage.
+        //console.log(bodyStr); // Print the HTML for the Google homepage.
         // console.log("Body type: ", typeof body);
         const body = JSON.parse(bodyStr);
         console.log("Title: ", body["Title"]);
@@ -122,7 +123,7 @@ function getRandomCommand() {
         if (err) throw err;
         // console.log(typeof data);
         const lines = data.split("\n");
-        console.log(lines);
+        //console.log(lines);
 
         let command;
         let commandVal;
